@@ -86,9 +86,9 @@ blocks:
       main-select-ann-limit:
         prepared: |
           SELECT * FROM TEMPLATE(keyspace,baselines).TEMPLATE(table,vectors) ORDER BY value ANN OF {vector_value} LIMIT TEMPLATE(select_limit,2);
-      main-select-pk-ann-limit:
-        prepared: |
-          SELECT * FROM TEMPLATE(keyspace,baselines).TEMPLATE(table,vectors) WHERE KEY={rw_key} ORDER BY value ANN OF {vector_value} LIMIT TEMPLATE(select_limit,2);
+      # main-select-pk-ann-limit:
+      #   prepared: |
+      #     SELECT * FROM TEMPLATE(keyspace,baselines).TEMPLATE(table,vectors) WHERE KEY={rw_key} ORDER BY value ANN OF {vector_value} LIMIT TEMPLATE(select_limit,2);
   
   main-write:
     params:

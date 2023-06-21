@@ -1,7 +1,7 @@
 #!/bin/bash
 
-java -jar nb5.jar vector-search.yaml default.schema \
+$JAVA_HOME/bin/java -jar nb5.jar vector-search.yaml default.schema \
  errors=stop \
- driverconfig=/path/to/driver-config.json \
+ driverconfig=driver-config.json \
  dimensions=128 keyspace=baselines \
  -vv --show-stacktraces

@@ -3,8 +3,8 @@
     "advanced": {
       "auth-provider": {
 	"class": "PlainTextAuthProvider",
-	"username": "ASTRA_CLIENT_ID",
-	"password": "ASTRA_CLIENT_SECRET"
+	"username": "cassandra",
+	"password": "cassandra"
       },
       "connection": {
 	"connect-timeout": "10 minutes",
@@ -23,14 +23,14 @@
     "basic": {
       "load-balancing-policy": {
         "class": "DefaultLoadBalancingPolicy",
-        "local-datacenter": "dc1"
+        "local-datacenter": "datacenter1"
       },
       "request": {
 	"timeout": "10 minutes"
       },
-      "cloud": {
-	"secure-connect-bundle": "/path/to/secure-connect-vector.zip"
-      }
+      "contact-points": [
+        "127.0.0.1:9042"
+      ]
     }
   },
   "driver": {

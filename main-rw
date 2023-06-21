@@ -1,8 +1,8 @@
 #!/bin/bash
 
-exec screen -d -m -S 'vector_main_rw' java -jar nb5.jar vector-search.yaml default.main \
+taskset -c 16-23 $JAVA_HOME/bin/java -jar nb5.jar vector-search.yaml default.main \
  errors=counter \
- driverconfig=/path/to/driver-config.json \
+ driverconfig=driver-config.json \
  dimensions=128 \
  main-cycles=10M keyspace=baselines \
  -v --show-stacktraces
