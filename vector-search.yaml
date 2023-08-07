@@ -36,9 +36,9 @@ bindings:
 blocks:
   drop-tables:
     ops:
-      drop-table-vectors:
+      drop-table-pages:
         raw: |
-          DROP TABLE IF EXISTS TEMPLATE(keyspace,baselines).TEMPLATE(table,vectors);
+          DROP TABLE IF EXISTS TEMPLATE(keyspace,wikipedia).TEMPLATE(table,pages);
   
   schema:
     params:
@@ -46,27 +46,27 @@ blocks:
     ops:
       #create-keyspace:
       #  raw: |
-      #    CREATE KEYSPACE IF NOT EXISTS TEMPLATE(keyspace,baselines)
+      #    CREATE KEYSPACE IF NOT EXISTS TEMPLATE(keyspace,wikipedia)
       #    WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '<<rf:1>>'};
       create-table:
         #value float vector[<<dimensions:5>>],
         raw: |
-          CREATE TABLE IF NOT EXISTS TEMPLATE(keyspace,baselines).TEMPLATE(table,vectors) (
+          CREATE TABLE IF NOT EXISTS TEMPLATE(keyspace,wikipedia).TEMPLATE(table,pages) (
             key TEXT,
             value vector<float,<<dimensions:5>>>,
             PRIMARY KEY (key)
           );
       create-sai-index:
         raw: |
-          CREATE CUSTOM INDEX IF NOT EXISTS ON TEMPLATE(keyspace,baselines).TEMPLATE(table,vectors) (value) USING 'StorageAttachedIndex' WITH OPTIONS = { 'similarity_function': 'dot_product' };
+          CREATE CUSTOM INDEX IF NOT EXISTS ON TEMPLATE(keyspace,wikipedia).TEMPLATE(table,pages) (value) USING 'StorageAttachedIndex' WITH OPTIONS = { 'similarity_function': 'dot_product' };
   
   truncate-tables:
     params:
       prepared: false
     ops:
-      truncate-vectors:
+      truncate-pages:
         raw: |
-          TRUNCATE TABLE TEMPLATE(keyspace,baselines).TEMPLATE(table,vectors);
+          TRUNCATE TABLE TEMPLATE(keyspace,wikipedia).TEMPLATE(table,pages);
 
   rampup:
     params:
@@ -74,7 +74,7 @@ blocks:
     ops:
       rampup-insert:
         prepared: |
-          INSERT INTO TEMPLATE(keyspace,baselines).TEMPLATE(table,vectors)
+          INSERT INTO TEMPLATE(keyspace,wikipedia).TEMPLATE(table,pages)
           (key, value) VALUES ({seq_key},{vector_value});
 
   main-read:
@@ -85,18 +85,7 @@ blocks:
     ops:
       main-select-ann-limit:
         prepared: |
-          SELECT * FROM TEMPLATE(keyspace,baselines).TEMPLATE(table,vectors) ORDER BY value ANN OF {vector_value} LIMIT TEMPLATE(select_limit,2);
+          SELECT content FROM TEMPLATE(keyspace,wikipedia).TEMPLATE(table,pages) ORDER BY embedding ANN OF {vector_value} LIMIT TEMPLATE(select_limit,1);
       # main-select-pk-ann-limit:
       #   prepared: |
-      #     SELECT * FROM TEMPLATE(keyspace,baselines).TEMPLATE(table,vectors) WHERE KEY={rw_key} ORDER BY value ANN OF {vector_value} LIMIT TEMPLATE(select_limit,2);
-  
-  main-write:
-    params:
-      ratio: TEMPLATE(write_ratio,10)
-      cl: TEMPLATE(write_cl,LOCAL_QUORUM)
-      instrument: true
-    ops:
-      main-insert:
-        prepared: |
-          INSERT INTO TEMPLATE(keyspace,baselines).TEMPLATE(table,vectors)
-          (key, value) VALUES ({rw_key}, {vector_value});
+      #     SELECT * FROM TEMPLATE(keyspace,wikipedia).TEMPLATE(table,pages) WHERE KEY={rw_key} ORDER BY value ANN OF {vector_value} LIMIT TEMPLATE(select_limit,2);
