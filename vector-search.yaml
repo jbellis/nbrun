@@ -13,7 +13,7 @@ scenarios:
   default:
     schema: run driver=cql tags==block:schema threads==1 cycles==UNDEF
     rampup: run driver=cql tags==block:rampup cycles===TEMPLATE(rampup-cycles,10000000) threads=100
-    main: run driver=cql tags=='block:main.*' cycles===TEMPLATE(main-cycles,10000000) threads=10
+    main: run driver=cql tags=='block:main.*' cycles===TEMPLATE(main-cycles,10000000) threads=auto stride=1000
   drop-tables:
     schema: run driver=cql tags==block:drop-tables threads==1 cycles==UNDEF
   truncate: run driver=cql tags==block:truncate-tables cycles===1 threads=1
@@ -85,7 +85,7 @@ blocks:
     ops:
       main-select-ann-limit:
         prepared: |
-          SELECT * FROM TEMPLATE(keyspace,wikipedia).TEMPLATE(table,pages) ORDER BY embedding ANN OF {vector_value} LIMIT TEMPLATE(select_limit,2);
+          SELECT content FROM TEMPLATE(keyspace,wikipedia).TEMPLATE(table,pages) ORDER BY embedding ANN OF {vector_value} LIMIT TEMPLATE(select_limit,10);
       # main-select-pk-ann-limit:
       #   prepared: |
       #     SELECT * FROM TEMPLATE(keyspace,wikipedia).TEMPLATE(table,pages) WHERE KEY={rw_key} ORDER BY embedding ANN OF {vector_value} LIMIT TEMPLATE(select_limit,2);
